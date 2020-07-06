@@ -8,73 +8,114 @@
 
 import SwiftUI
 
-//Model Data
-struct ProductModel : Identifiable {
-    let id: Int
-    let namaProduk: String
-    let fotoProduk: String
-    let hargaProduk: Int
-    let lokasi: String
-    let ratingCount: Int
-    let jumlahRating: Int
+
+struct ContentView: View {
     
-    init(id:Int, namaProduk:String, fotoProduk: String, hargaProduk:Int,lokasi: String, ratingCount: Int, jumlahRating: Int) {
-        self.id = id
-        self.namaProduk = namaProduk
-        self.fotoProduk = fotoProduk
-        self.hargaProduk = hargaProduk
-        self.lokasi = lokasi
-        self.ratingCount = ratingCount
-        self.jumlahRating = jumlahRating
+    let data : [DataModel] = [
+        DataModel(id: 1, namaProduk: "Polygon Xtrada", fotoProduk: "foto1", hargaProduk: 2000000, lokasi: "Kab. Banyumas", ratingCount: 4, jumlahRating: 56),
+        DataModel(id: 2, namaProduk: "Polygon Heist", fotoProduk: "foto2", hargaProduk: 3000000, lokasi: "Kab. Bogor", ratingCount: 5, jumlahRating: 50),
+        DataModel(id: 3, namaProduk: "Polygon Monarch", fotoProduk: "foto3", hargaProduk: 5000000, lokasi: "Kab. Brebes", ratingCount: 4, jumlahRating: 56),
+        DataModel(id: 4, namaProduk: "United Detroit", fotoProduk: "foto4", hargaProduk: 9000000, lokasi: "Kab. Pekalongan", ratingCount: 4, jumlahRating: 56),
+        DataModel(id: 5, namaProduk: "United Miami", fotoProduk: "foto5", hargaProduk: 9000000, lokasi: "Kab. Pemalang", ratingCount: 3, jumlahRating: 56),
+        DataModel(id: 6, namaProduk: "United Patrol", fotoProduk: "foto6", hargaProduk: 2000000, lokasi: "Kab. Banyumas", ratingCount: 4, jumlahRating: 56),
+        DataModel(id: 7, namaProduk: "Exotic M56 ", fotoProduk: "foto7", hargaProduk: 6000000, lokasi: "Kab. Banyumas", ratingCount: 5, jumlahRating: 56),
+        DataModel(id: 8, namaProduk: "Exotic J98", fotoProduk: "foto8", hargaProduk: 2000000, lokasi: "Kab. Banyumas", ratingCount: 4, jumlahRating: 56),
+        DataModel(id: 9, namaProduk: "Genio Xtrada", fotoProduk: "foto9", hargaProduk: 8000000, lokasi: "Kab. Banyumas", ratingCount: 3, jumlahRating: 56),
+        DataModel(id: 10, namaProduk: "Pacific M898", fotoProduk: "foto10", hargaProduk: 2000000, lokasi: "Kab. Banyumas", ratingCount: 4, jumlahRating: 56)
+    ]
+    
+    //    @State var jumlahkeranjang:Int = 1
+    @ObservedObject var globaldata = GlobalObject()
+    
+    var body: some View {
+        
+        NavigationView{
+            ScrollView{
+                ForEach(data) { row in // create number of rows
+                    VStack(spacing:10){
+                        Product(data: row, jumlahkeranjang: self.globaldata)
+                    }
+                    .padding()
+                }
+            }
+                
+            .navigationBarTitle("Sepeda MTB")
+            .navigationBarItems(
+                trailing:
+                HStack(spacing:20){
+                    statusView()
+                    
+                    NavigationLink(destination: DetailView(globaldata: globaldata)){
+                        keranjangView(jumlahkeranjang: globaldata)
+                    }
+                    
+                }
+            )
+        }
+        .accentColor(Color.secondary)
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
 
-struct ContentView: View {
-    let data : [ProductModel] = [
-        ProductModel(id: 1, namaProduk: "Polygon Monarch 3.0", fotoProduk: "foto1", hargaProduk: 2000000,lokasi: "Kab. Bogor", ratingCount: 4, jumlahRating: 33),
-        ProductModel(id: 2, namaProduk: "Polygon Monarch 4.0", fotoProduk: "foto2", hargaProduk: 2000000, lokasi: "Kab. Bogor",ratingCount: 2, jumlahRating: 33),
-        ProductModel(id: 3, namaProduk: "Polygon Monarch 5.0", fotoProduk: "foto3", hargaProduk: 2000000, lokasi: "Kab. Bogor",ratingCount: 4, jumlahRating: 33),
-        ProductModel(id: 4, namaProduk: "United Detroit 2.0", fotoProduk: "foto4", hargaProduk: 2000000, lokasi: "Kab. Bogor",ratingCount: 2, jumlahRating: 33),
-        ProductModel(id: 5, namaProduk: "United Detroit 3.0", fotoProduk: "foto5", hargaProduk: 2000000, lokasi: "Kab. Bogor",ratingCount: 4, jumlahRating: 33),
-        ProductModel(id: 6, namaProduk: "United Detroit 4.0", fotoProduk: "foto6", hargaProduk: 2000000, lokasi: "Kab. Bogor",ratingCount: 5, jumlahRating: 33),
-        ProductModel(id: 7, namaProduk: "Pacific Invert", fotoProduk: "foto7", hargaProduk: 2000000, lokasi: "Kab. Bogor",ratingCount: 4, jumlahRating: 33),
-        ProductModel(id: 8, namaProduk: "United Genio", fotoProduk: "foto8", hargaProduk: 2000000, lokasi: "Kab. Bogor",ratingCount: 5, jumlahRating: 33),
-        ProductModel(id: 9, namaProduk: "Exotic 3.0", fotoProduk: "foto9", hargaProduk: 2000000, lokasi: "Kab. Bogor",ratingCount: 2, jumlahRating: 33),
-        ProductModel(id: 10, namaProduk: "Polygon heist 3.0", fotoProduk: "foto10", hargaProduk: 2000000, lokasi: "Kab. Bogor",ratingCount: 4, jumlahRating: 33)
-    ]
-    
-    
-    var body: some View {
+struct statusView : View {
+    var body : some View {
+        ZStack{
+            
+            Image(systemName: "person.fill")
+            Text("")
+                .foregroundColor(Color.white)
+                .frame(width:5, height:5)
+                .font(.body)
+                .padding(5)
+                .background(Color.green)
+                .clipShape(Circle())
+                .offset(x:10, y:-10)
+        }
+    }
+}
 
-            NavigationView{
-                ScrollView{
-                    ForEach(data) { row in // create number of rows
-                        VStack(spacing:10){
-                            Product(data: row)
-                        }
-                        .padding()
-                    }
-                }
-                
-                .navigationBarTitle("Sepeda MTB")
+
+struct keranjangView : View {
+    //    @Binding var jumlah:Int
+    @ObservedObject var jumlahkeranjang : GlobalObject
+    
+    var body : some View {
+        ZStack{
+            
+            Image(systemName: "cart.fill")
+            Text("\(self.jumlahkeranjang.jumlah)")
+                .foregroundColor(Color.white)
+                .frame(width:10, height:10)
+                .font(.body)
+                .padding(5)
+                .background(Color.red)
+                .clipShape(Circle())
+                .offset(x:10, y:-10)
+        }
+    }
+}
+
+struct DetailView : View {
+    @ObservedObject var globaldata : GlobalObject
+    
+    var body : some View {
+        NavigationView {
+            Text("Detail View")
+                .navigationBarTitle("Detail")
                 .navigationBarItems(
                     trailing:
                     HStack(spacing:20){
-                        Button(action:{print("Ok")}){
-                            Image(systemName: "person.fill")
-                        }
-                        
-                        Button(action:{print("Ok")}){
-                            Image(systemName: "cart.fill")
-                        }
+                        statusView()
+                        //reusable view
+                        keranjangView(jumlahkeranjang: globaldata)
                     }
-                )
-            }
-            .accentColor(Color.secondary)
-            .navigationViewStyle(StackNavigationViewStyle())
+            )
+            
         }
+    }
 }
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
@@ -83,7 +124,8 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 struct Product : View {
-    let data: ProductModel
+    let data: DataModel
+    @ObservedObject var jumlahkeranjang : GlobalObject
     
     var body: some View {
         
@@ -92,18 +134,18 @@ struct Product : View {
                 
                 
                 Image(self.data.fotoProduk)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(height: 200)
-                .clipped()
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(height: 200)
+                    .clipped()
                 
                 Button(action: {print("heart clicked")}){
                     Image(systemName: "heart")
-                    .padding()
-                    .foregroundColor(Color.red)
+                        .padding()
+                        .foregroundColor(Color.red)
                 }
             }
-              
+            
             Text(self.data.namaProduk)
                 .font(.title)
                 .bold()
@@ -139,25 +181,39 @@ struct Product : View {
             .padding(.trailing)
             .padding(.bottom)
             
-            Button(action:{print("Tambah ke Keranjang")} ){
-                HStack{
-                    Spacer()
-                    HStack{
-                        Image(systemName: "cart")
-                        Text("Tambah ke Keranjang")
-                            .font(.callout)
-                            .padding()
-                    }
-                    Spacer()
-                }
-            }
-            .background(Color.green)
-            .foregroundColor(Color.white)
-            .cornerRadius(10)
-            .padding()
+            tambahKeranjang(data: data, keranjang: jumlahkeranjang)
             
         }
         .background(Color("warna"))
         .cornerRadius(15)
     }
+}
+
+
+struct tambahKeranjang : View {
+    let data: DataModel
+    //   @Binding var jumlah: Int
+    @ObservedObject var keranjang : GlobalObject
+    
+    var body : some View {
+        Button(action:{self.keranjang.jumlah += 1} ){
+            HStack{
+                Spacer()
+                HStack{
+                    Image(systemName: "cart")
+                    Text("Tambah ke Keranjang")
+                        .font(.callout)
+                        .padding()
+                }
+                Spacer()
+            }
+        }
+        .background(Color.green)
+        .foregroundColor(Color.white)
+        .cornerRadius(10)
+        .padding()
+    }
+    
+    
+    
 }
